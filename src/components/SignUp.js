@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Copyright(props) {
   return (
@@ -36,18 +37,10 @@ export default function SignUp() {
     phoneState:false
 
   })
+  let navigate=useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      phoneNumber: data.get('phoneNumber'),
-      name: data.get('name'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    console.log(data.get('email'))
-    console.log(data.get('password'))
- 
     if(data.get('name').length<2){
       setError({
         ...error,
@@ -72,24 +65,27 @@ export default function SignUp() {
       })
     }
 
-    // axios({
-    //   method: 'post',
-    //   url: 'http://localhost:3000/users/register',
-    //   headers: {
-    //     'Accept': 'application/json',
-    //     'Content-Type': 'application/json',
-    //   },
-    //   data: {
-    //     phoneNumber: data.get('phoneNumber'),
-    //     name: data.get('name'),
-    //     email: data.get('email'),
-    //     password: data.get('password'),
-    //   }
-    // }).then((response) => {
-    //   console.log(response);
-    // }, (error) => {
-    //   console.log(error);
-    // });;
+    axios({
+      method: 'post',
+      url: 'http://localhost:3000/users/register',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      data: {
+        phoneNumber: data.get('phoneNumber'),
+        name: data.get('name'),
+        email: data.get('email'),
+        password: data.get('password'),
+      }
+    }).then((response) => {
+      console.log(response);
+      if(response.data){
+        navigate(`/wall/${response.data._id}`)
+      }
+    }, (error) => {
+      console.log(error);
+    });;
     
   };
 

@@ -12,6 +12,11 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types'
+
+
 
 function Copyright(props) {
   return (
@@ -26,16 +31,44 @@ function Copyright(props) {
   );
 }
 
+SignInSide.propTypes = {
+  setToken: PropTypes.func.isRequired
+}
+async function LoginUser(event) {
+  // let navigate = useNavigate();
+   const data = new FormData(event.currentTarget);
+return    axios({
+    method: 'post',
+    url: 'http://localhost:3000/users/login',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    data: {
+    email: data.get('email'),
+    password: data.get('password'),
+    }
+  }).then((response) => {
+    console.log(response);
+    if(response.status===200){
+      // navigate("/dashboard")
+    return response.data.token
+    }
+  }, (error) => {
+    console.log(error);
+  });;
+}
+
 const defaultTheme = createTheme();
 
-export default function SignInSide() {
-  const handleSubmit = (event) => {
+export default function SignInSide({setToken}) {
+
+  const handleSubmit =async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const token = await LoginUser(event)
+    console.log(token)
+    setToken(token)
+
   };
 
   return (
